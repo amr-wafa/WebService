@@ -21,7 +21,7 @@ page 50060 "Web Management"
     var
         WebMangement: Codeunit "Web Management";
     begin
-        WebMangement.CreateStockSync();
+        WebMangement.Run();
     end;
 
 }
