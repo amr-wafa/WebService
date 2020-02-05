@@ -38,13 +38,15 @@ codeunit 50060 "Web Management"
         HttpHeaderG.Add('Content-Type', 'text/xml;charset=utf-8');
         HttpHeaderG.Add('SOAPAction', 'http://tempuri.org/BarcodeProcessAbsoluteQuantity');
         HttpClientG.SetBaseAddress(UrlP);
-        if HttpClientG.Post(UrlP, HttpContentG, HttpResponseG) then begin
-            HttpResponseG.Content().ReadAs(ResponseTextG);
-            TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextG);
-        end else begin
-            ResponseTextG := HttpResponseG.ReasonPhrase();
-            ErrorLogG.InsertErrorlog(EntryNoP, ResponseTextG);
-        end
+        //HttpClientG.Send()
+        // if HttpClientG.Post(UrlP, HttpContentG, HttpResponseG) then begin
+        //     HttpResponseG.Content().ReadAs(ResponseTextG);
+        //     TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextG);
+        // end else begin
+        //     ResponseTextG := HttpResponseG.ReasonPhrase();
+        //     HttpResponseG.Content().
+        //     ErrorLogG.InsertErrorlog(EntryNoP, ResponseTextG);
+        // end
     end;
 
     procedure CreateXml2()
@@ -85,7 +87,7 @@ codeunit 50060 "Web Management"
         if HttpClientL.Post('https://rcs02-sales.fftech.info/pub/apistock.asmx', HttpContentL, HttpResponseL) then
             HttpResponseL.Content().ReadAs(ResponseTextL)
         else
-            ResponseTextL := HttpResponseL.ReasonPhrase();
+            HttpResponseL.Content().ReadAs(ResponseTextL);
         Message(ResponseTextL);
     end;
 
