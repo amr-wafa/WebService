@@ -30,46 +30,22 @@ codeunit 50060 "Web Management"
         PostItemCreationRequest1(TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, WebServiceTemplateG."Template Code", 0, XmlTextG), XmlTextG, WebServiceTemplateG.Url, WebServiceTemplateG."Template Code");
     end;
 
-    procedure PostItemCreationRequest2(EntryNoP: BigInteger; XmlTextP: Text; UrlP: Text[250]; TemplateCodeP: Code[20])
-    begin
-        HttpClientG.Clear();
-        HttpContentG.WriteFrom(XmlTextP);
-        HttpContentG.GetHeaders(HttpHeaderG);
-        HttpHeaderG.Remove('Content-Type');
-        HttpHeaderG.Add('Content-Type', 'text/xml;charset=utf-8');
-        HttpHeaderG.Add('SOAPAction', 'http://tempuri.org/BarcodeProcessAbsoluteQuantity');
-        HttpClientG.SetBaseAddress(UrlP);
-        if HttpClientG.Post(UrlP, HttpContentG, HttpResponseG) then begin
-            HttpResponseG.Content().ReadAs(ResponseTextG);
-            TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextG);
-        end else begin
-            ResponseTextG := 'reason:' + HttpResponseG.ReasonPhrase() + ' code:' + format(HttpResponseG.HttpStatusCode()) + ' status:' + format(HttpResponseG.IsSuccessStatusCode());
-            ErrorLogG.InsertErrorlog(EntryNoP, ResponseTextG);
-            Message(ResponseTextG);
-        end
-    end;
-
     // recommended method
     procedure PostItemCreationRequest1(EntryNoP: BigInteger; XmlTextP: Text; UrlP: Text[250]; TemplateCodeP: Code[20])
     var
-        ContentL: HttpContent;
-        ContentHeaderL: HttpHeaders;
-        ClientL: HttpClient;
-        RequestL: HttpRequestMessage;
-        ResponseL: HttpResponseMessage;
         ResponseTextL: Text;
     begin
-        ContentL.WriteFrom(XmlTextP);
-        ContentL.GetHeaders(ContentHeaderL);
-        ContentHeaderL.Clear();
-        ContentHeaderL.Add('Content-Type', 'text/xml;charset=utf-8');
-        ContentHeaderL.Add('SOAPAction', 'http://tempuri.org/BarcodeProcessAbsoluteQuantity');
-        RequestL.Content := ContentL;
-        RequestL.SetRequestUri(UrlP);
-        RequestL.Method := 'POST';
+        ContentG.WriteFrom(XmlTextP);
+        ContentG.GetHeaders(HeaderG);
+        HeaderG.Clear();
+        HeaderG.Add('Content-Type', 'text/xml;charset=utf-8');
+        HeaderG.Add('SOAPAction', 'http://tempuri.org/BarcodeProcessAbsoluteQuantity');
+        RequestG.Content := ContentG;
+        RequestG.SetRequestUri(UrlP);
+        RequestG.Method := 'POST';
         // TODO incomplete, not right solution
-        if ClientL.Send(RequestL, ResponseL) then begin
-            if ResponseL.Content().ReadAs(ResponseTextL) then
+        if ClientG.Send(RequestG, ResponseG) then begin
+            if ResponseG.Content().ReadAs(ResponseTextL) then
                 // TODO based on the API response to be handled
                 TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextL)
             else begin
@@ -80,6 +56,25 @@ codeunit 50060 "Web Management"
             TransactionLogG.ModifyStatus(EntryNoP);
             ErrorLogG.InsertErrorlog(EntryNoP, FailedCallErr); // timeout or out of service
         end;
+    end;
+
+    procedure PostItemCreationRequest2(EntryNoP: BigInteger; XmlTextP: Text; UrlP: Text[250]; TemplateCodeP: Code[20])
+    begin
+        ClientG.Clear();
+        ContentG.WriteFrom(XmlTextP);
+        ContentG.GetHeaders(HeaderG);
+        HeaderG.Remove('Content-Type');
+        HeaderG.Add('Content-Type', 'text/xml;charset=utf-8');
+        HeaderG.Add('SOAPAction', 'http://tempuri.org/BarcodeProcessAbsoluteQuantity');
+        ClientG.SetBaseAddress(UrlP);
+        if ClientG.Post(UrlP, ContentG, ResponseG) then begin
+            ResponseG.Content().ReadAs(ResponseTextG);
+            TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextG);
+        end else begin
+            ResponseTextG := 'reason:' + ResponseG.ReasonPhrase() + ' code:' + format(ResponseG.HttpStatusCode()) + ' status:' + format(ResponseG.IsSuccessStatusCode());
+            ErrorLogG.InsertErrorlog(EntryNoP, ResponseTextG);
+            Message(ResponseTextG);
+        end
     end;
 
     procedure CreateXml2()
@@ -171,10 +166,11 @@ codeunit 50060 "Web Management"
         XmlTextG: Text;
         DirectionG: Option "Incoming Request","Incoming Response","Outgoing Request","Outgoing Response";
         StatusG: Option "To be Processed",Failed,Processed,"Closed Manually","Skip Processing";
-        HttpClientG: HttpClient;
-        HttpContentG: HttpContent;
-        HttpHeaderG: HttpHeaders;
-        HttpResponseG: HttpResponseMessage;
+        ContentG: HttpContent;
+        HeaderG: HttpHeaders;
+        ClientG: HttpClient;
+        RequestG: HttpRequestMessage;
+        ResponseG: HttpResponseMessage;
         ResponseTextG: Text;
 
         FailedCallErr: Label '<?xml version="1.0"?><WebSerivceError><Error>Web Service call failed.</Error></WebSerivceError>';
