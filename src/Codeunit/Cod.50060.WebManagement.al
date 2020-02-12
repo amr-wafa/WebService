@@ -32,8 +32,6 @@ codeunit 50060 "Web Management"
 
     // recommended method
     procedure PostItemCreationRequest1(EntryNoP: BigInteger; XmlTextP: Text; UrlP: Text[250]; TemplateCodeP: Code[20])
-    var
-        ResponseTextL: Text;
     begin
         ContentG.WriteFrom(XmlTextP);
         ContentG.GetHeaders(HeaderG);
@@ -43,11 +41,10 @@ codeunit 50060 "Web Management"
         RequestG.Content := ContentG;
         RequestG.SetRequestUri(UrlP);
         RequestG.Method := 'POST';
-        // TODO incomplete, not right solution
         if ClientG.Send(RequestG, ResponseG) then begin
-            if ResponseG.Content().ReadAs(ResponseTextL) then
+            if ResponseG.Content().ReadAs(ResponseTextG) then
                 // TODO based on the API response to be handled
-                TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextL)
+                TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextG)
             else begin
                 TransactionLogG.ModifyStatus(EntryNoP);
                 ErrorLogG.InsertErrorlog(EntryNoP, InvalidResErr); // capture other error
@@ -77,6 +74,11 @@ codeunit 50060 "Web Management"
         end
     end;
 
+    procedure PostCarryOrderDetail()
+    begin
+
+    end;
+
     procedure CreateXml2()
     var
         XmlDomMgmtL: Codeunit "XML DOM Mgt.";
@@ -97,7 +99,7 @@ codeunit 50060 "Web Management"
         XmlDomMgmtL.AddRootElement(XmlDocumentL, 'Envelope', EnvNameSpaceLbl, EnvelopeXmlNodeL);
         XmlDomMgmtL.AddElement(EnvelopeXmlNodeL, 'Body', '', EnvNameSpaceLbl, EnvelopeXmlNodeL);
         XmlDomMgmtL.AddElement(EnvelopeXmlNodeL, 'BarcodeProcessAbsoluteQuantity', '', BarcodeNameSpaceLbl, EnvelopeXmlNodeL);
-        XmlDomMgmtL.AddElement(EnvelopeXmlNodeL, 'Key', '2/XhsNe63kQ', BarcodeNameSpaceLbl, lTempXmlNode);
+        XmlDomMgmtL.AddElement(EnvelopeXmlNodeL, 'Key', '', BarcodeNameSpaceLbl, lTempXmlNode);
         XmlDomMgmtL.AddElement(EnvelopeXmlNodeL, 'Barcode', '263301701-OS', BarcodeNameSpaceLbl, lTempXmlNode);
         XmlDomMgmtL.AddElement(EnvelopeXmlNodeL, 'absoluteQuantity', '10', BarcodeNameSpaceLbl, lTempXmlNode);
         XmlDomMgmtL.AddElement(EnvelopeXmlNodeL, 'ErrMsg', '', BarcodeNameSpaceLbl, lTempXmlNode);
