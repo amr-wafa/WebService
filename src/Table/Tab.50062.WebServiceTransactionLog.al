@@ -128,6 +128,13 @@ table 50062 "Web Service Transaction Log"
         exit("Entry No");
     end;
 
+    procedure ModifyStatus(EntryNoP: BigInteger)
+    begin
+        Rec.Get(EntryNoP);
+        Rec.Status := Rec.Status::"To be Processed";
+        Rec.Modify(true);
+    end;
+
     procedure ExportTemplate(): Text
     var
         TempBlobL: Codeunit "Temp Blob";

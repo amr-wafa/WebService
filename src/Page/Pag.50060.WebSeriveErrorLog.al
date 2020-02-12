@@ -4,8 +4,7 @@ page 50060 "Web Serive Error Log"
     PageType = List;
     SourceTable = "Web Service Error Log";
     Caption = 'Web Serive Error Log';
-    ApplicationArea = All;
-    UsageCategory = Lists;
+    UsageCategory = None;
     Editable = false;
 
     layout

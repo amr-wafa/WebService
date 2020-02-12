@@ -233,6 +233,16 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Web Management - Method CreateXml2 - NamedType BarcodeNameSpaceLbl</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3139946109 - NamedType 2041511320" size-unit="char" translate="yes" xml:space="preserve">
+          <source>&lt;?xml version="1.0"?&gt;&lt;WebSerivceError&gt;&lt;Error&gt;Web Service call failed.&lt;/Error&gt;&lt;/WebSerivceError&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Web Management - NamedType FailedCallErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3139946109 - NamedType 1258247476" size-unit="char" translate="yes" xml:space="preserve">
+          <source>&lt;?xml version="1.0"?&gt;&lt;WebSerivceError&gt;&lt;Error&gt;Invalid response.&lt;/Error&gt;&lt;/WebSerivceError&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Web Management - NamedType InvalidResErr</note>
+        </trans-unit>
         <trans-unit id="Page 1769627670 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Web Serive Error Log</source>
           <note from="Developer" annotates="general" priority="2"></note>

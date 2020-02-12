@@ -55,7 +55,6 @@ page 50061 "Web Service Template"
                     WebL: Codeunit "Web Management";
                 begin
                     WebL.CreateItemCreationRequest();
-                    WebL.CreateXml2();
                 end;
             }
         }

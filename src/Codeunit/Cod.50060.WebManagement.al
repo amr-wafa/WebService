@@ -26,10 +26,11 @@ codeunit 50060 "Web Management"
         XmlDomMgmtG.AddElement(EnvelopeXmlNodeG, 'IsAdjustment', 'false', BarcodeNameSpaceLbl, TempXmlNodeG);
         XmlDomMgmtG.AddElement(EnvelopeXmlNodeG, 'currentStock', '1', BarcodeNameSpaceLbl, TempXmlNodeG);
         XmlDocumentG.WriteTo(XmlTextG);
-        PostItemCreationRequest(TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, WebServiceTemplateG."Template Code", 0, XmlTextG), XmlTextG, WebServiceTemplateG.Url, WebServiceTemplateG."Template Code");
+        //PostItemCreationRequest2(TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, WebServiceTemplateG."Template Code", 0, XmlTextG), XmlTextG, WebServiceTemplateG.Url, WebServiceTemplateG."Template Code");
+        PostItemCreationRequest1(TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, WebServiceTemplateG."Template Code", 0, XmlTextG), XmlTextG, WebServiceTemplateG.Url, WebServiceTemplateG."Template Code");
     end;
 
-    procedure PostItemCreationRequest(EntryNoP: BigInteger; XmlTextP: Text; UrlP: Text[250]; TemplateCodeP: Code[20])
+    procedure PostItemCreationRequest2(EntryNoP: BigInteger; XmlTextP: Text; UrlP: Text[250]; TemplateCodeP: Code[20])
     begin
         HttpClientG.Clear();
         HttpContentG.WriteFrom(XmlTextP);
@@ -38,15 +39,47 @@ codeunit 50060 "Web Management"
         HttpHeaderG.Add('Content-Type', 'text/xml;charset=utf-8');
         HttpHeaderG.Add('SOAPAction', 'http://tempuri.org/BarcodeProcessAbsoluteQuantity');
         HttpClientG.SetBaseAddress(UrlP);
-        //HttpClientG.Send()
-        // if HttpClientG.Post(UrlP, HttpContentG, HttpResponseG) then begin
-        //     HttpResponseG.Content().ReadAs(ResponseTextG);
-        //     TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextG);
-        // end else begin
-        //     ResponseTextG := HttpResponseG.ReasonPhrase();
-        //     HttpResponseG.Content().
-        //     ErrorLogG.InsertErrorlog(EntryNoP, ResponseTextG);
-        // end
+        if HttpClientG.Post(UrlP, HttpContentG, HttpResponseG) then begin
+            HttpResponseG.Content().ReadAs(ResponseTextG);
+            TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextG);
+        end else begin
+            ResponseTextG := 'reason:' + HttpResponseG.ReasonPhrase() + ' code:' + format(HttpResponseG.HttpStatusCode()) + ' status:' + format(HttpResponseG.IsSuccessStatusCode());
+            ErrorLogG.InsertErrorlog(EntryNoP, ResponseTextG);
+            Message(ResponseTextG);
+        end
+    end;
+
+    // recommended method
+    procedure PostItemCreationRequest1(EntryNoP: BigInteger; XmlTextP: Text; UrlP: Text[250]; TemplateCodeP: Code[20])
+    var
+        ContentL: HttpContent;
+        ContentHeaderL: HttpHeaders;
+        ClientL: HttpClient;
+        RequestL: HttpRequestMessage;
+        ResponseL: HttpResponseMessage;
+        ResponseTextL: Text;
+    begin
+        ContentL.WriteFrom(XmlTextP);
+        ContentL.GetHeaders(ContentHeaderL);
+        ContentHeaderL.Clear();
+        ContentHeaderL.Add('Content-Type', 'text/xml;charset=utf-8');
+        ContentHeaderL.Add('SOAPAction', 'http://tempuri.org/BarcodeProcessAbsoluteQuantity');
+        RequestL.Content := ContentL;
+        RequestL.SetRequestUri(UrlP);
+        RequestL.Method := 'POST';
+        // TODO incomplete, not right solution
+        if ClientL.Send(RequestL, ResponseL) then begin
+            if ResponseL.Content().ReadAs(ResponseTextL) then
+                // TODO based on the API response to be handled
+                TransactionLogG.InsertTransactionLog(DirectionG::"Outgoing Request", StatusG::Processed, TemplateCodeP, 0, ResponseTextL)
+            else begin
+                TransactionLogG.ModifyStatus(EntryNoP);
+                ErrorLogG.InsertErrorlog(EntryNoP, InvalidResErr); // capture other error
+            end;
+        end else begin
+            TransactionLogG.ModifyStatus(EntryNoP);
+            ErrorLogG.InsertErrorlog(EntryNoP, FailedCallErr); // timeout or out of service
+        end;
     end;
 
     procedure CreateXml2()
@@ -143,6 +176,9 @@ codeunit 50060 "Web Management"
         HttpHeaderG: HttpHeaders;
         HttpResponseG: HttpResponseMessage;
         ResponseTextG: Text;
+
+        FailedCallErr: Label '<?xml version="1.0"?><WebSerivceError><Error>Web Service call failed.</Error></WebSerivceError>';
+        InvalidResErr: Label '<?xml version="1.0"?><WebSerivceError><Error>Invalid response.</Error></WebSerivceError>';
 
 }
 
