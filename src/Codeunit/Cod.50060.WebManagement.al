@@ -74,11 +74,6 @@ codeunit 50060 "Web Management"
         end
     end;
 
-    procedure PostCarryOrderDetail()
-    begin
-
-    end;
-
     procedure CreateXml2()
     var
         XmlDomMgmtL: Codeunit "XML DOM Mgt.";
