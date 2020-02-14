@@ -1,9 +1,9 @@
-page 50060 "Web Serive Error Log"
+page 50060 "Web Service Error Log"
 {
 
     PageType = List;
     SourceTable = "Web Service Error Log";
-    Caption = 'Web Serive Error Log';
+    Caption = 'Web Service Error Log';
     UsageCategory = None;
     Editable = false;
 

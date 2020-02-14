@@ -213,6 +213,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Web Service Error Log - Method ExportTemplate - NamedType NoDataErr</note>
         </trans-unit>
+        <trans-unit id="Page 2383649083 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Web Service Error Log</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Web Service Error Log - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3139946109 - Method 556363899 - NamedType 846663136" size-unit="char" translate="yes" xml:space="preserve">
           <source>http://schemas.xmlsoap.org/soap/envelope/</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -243,10 +248,10 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Web Management - NamedType InvalidResErr</note>
         </trans-unit>
-        <trans-unit id="Page 1769627670 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Web Serive Error Log</source>
+        <trans-unit id="Page 3113654799 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Web Service Error Log Card</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Web Serive Error Log - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Web Service Error Log Card - Property Caption</note>
         </trans-unit>
       </group>
     </body>

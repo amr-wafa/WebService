@@ -80,7 +80,7 @@ page 50063 "Web Service Transaction Log"
                 PromotedIsBig = true;
                 Promoted = true;
                 PromotedCategory = Process;
-                RunObject = page "Web Serive Error Log";
+                RunObject = page "Web Service Error Log";
                 RunPageLink = "Transaction Entry No" = field("Entry No");
             }
             action("View Log File")
